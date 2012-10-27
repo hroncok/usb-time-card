@@ -20,17 +20,20 @@ void defaultConfig(int * waittime,const char ** serial,const char ** log,const c
 
 /* In file configuration */
 void loadConfig(config_t *cf, const char * config, int * waittime,const char ** serial,const char ** log,const char ** html) {
+	/* Check config file syntax */
 	if (!config_read_file(cf, config)) {
 		fprintf(stderr, "%s:%d - %s\n",config_error_file(cf),config_error_line(cf),config_error_text(cf));
 		config_destroy(cf);
 		exit(1);
 	}
 	
+	/* Load variables */
 	config_lookup_int(cf, "waittime", waittime);
 	config_lookup_string(cf, "serial", serial);
 	config_lookup_string(cf, "log", log);
 	config_lookup_string(cf, "html", html);
 	
+	/* Validation */
 	if (*waittime < 0) {
 		fprintf(stderr, "Found negative value in waittime variable in config file. Not going to work.\n");
 		config_destroy(cf);
