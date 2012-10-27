@@ -109,21 +109,65 @@ int USBDiskPresent(const char * serial) {
 	return 0;       
 }
 
+/* Read the log and rebuild HTML page */
+void exportHTML(const char * log, const char * html) {
+	FILE *logfile;
+	FILE *htmlfile;
+	
+	/* Open logfile for reading */
+	logfile = fopen(log,"r");
+	if (!logfile) {
+		perror("Cannot open log file for reading");
+		exit(1);
+	}
+	
+	/* Open HTML file for (re)writing */
+	htmlfile = fopen(html,"w");
+	if (!htmlfile) {
+		perror("Cannot open HTML file for writing");
+		exit(1);
+	}
+	
+	/* HTML head */
+	fprintf(htmlfile,"<html>\n");
+	fprintf(htmlfile,"<head>\n");
+	fprintf(htmlfile,"\t<title>USB Time Card Log</title>\n");
+	fprintf(htmlfile,"\t<meta charset=\"utf-8\">\n");
+	fprintf(htmlfile,"</head>\n");
+	fprintf(htmlfile,"<body>\n");
+	
+	/* TODO Stuff here */
+	
+	/* HTML tail */
+	fprintf(htmlfile,"</body>\n");
+	fprintf(htmlfile,"</html>\n");
+	
+	/* Close files */
+	fclose(logfile);
+	fclose(htmlfile);
+}
+
 /* Write the status to log */
-void writeStatus(const char * serial, int present, const char * log) {
+void writeStatus(const char * serial, int present, const char * log, const char * html) {
 	const char *way;
 	time_t now;
 	FILE *logfile;
 	
-
+	/* In or out */
 	if (present) way = " in";
 	else         way = "out";
 	time(&now);
-	logfile = fopen(log,"a+");
+	
+	/* Open logfile for appending */
+	logfile = fopen(log,"a");
+	if (!logfile) {
+		perror("Cannot open log file for writing");
+		exit(1);
+	}
 	fprintf(logfile,"%s: %s %s",serial,way,ctime(&now));
 	fclose(logfile);
 	
-	/* TODO regenerate HTML */
+	exportHTML(log,html);
 }
 
 /* This happens when SIGTERM */
@@ -159,14 +203,14 @@ int main(void) {
 	while (gcont) {
 		if (USBDiskPresent(serial) != present) {
 			present = ! present;
-			writeStatus(serial,present,log);
+			writeStatus(serial,present,log,html);
 		}
 		sleep(waittime);
 	}
 	
 	/* Here we are after SIGTERM.
 	   If the device is present, fake disconnect */
-	if (present) writeStatus(serial,0,log);
+	if (present) writeStatus(serial,0,log,html);
 	
 	/* Destroy config */
 	config_destroy(&cfg);
