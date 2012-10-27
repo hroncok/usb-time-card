@@ -71,8 +71,10 @@ int USBDiskPresent(const char * serial) {
 
 /* Write the status to log */
 void writeStatus(const char * serial, int present) {
+	/* TODO write to the log */
 	if (present) printf("Device %s connected.\n",serial);
 	else         printf("Device %s disconnected.\n",serial);
+	/* TODO regenerate HTML */
 }
 
 /* This happens when SIGTERM */
@@ -96,6 +98,7 @@ int main(void) {
 	present = 0;
 	
 	/* Default config */
+	/* TODO Load config file */
 	waittime = 2;
 	serial = "7FA11D00715C0087";
 	
