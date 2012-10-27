@@ -20,6 +20,11 @@ void defaultConfig(int * waittime,const char ** serial,const char ** log,const c
 
 /* In file configuration */
 void loadConfig(config_t *cf, const char * config, int * waittime,const char ** serial,const char ** log,const char ** html) {
+	/* Default config */
+	defaultConfig(waittime,serial,log,html);
+	
+	config_init(cf);
+	
 	/* Check config file syntax */
 	if (!config_read_file(cf, config)) {
 		fprintf(stderr, "%s:%d - %s\n",config_error_file(cf),config_error_line(cf),config_error_text(cf));
@@ -39,6 +44,8 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 		config_destroy(cf);
 		exit(1);
 	}
+	
+	/* Destroy config before exiting the program */
 }
 
 /* Determinate, if the USB disk is present */
@@ -133,11 +140,7 @@ int main(void) {
 	/* Device is not present at start */
 	present = 0;
 	
-	/* Default config */
-	defaultConfig(&waittime,&serial,&log,&html);
-	
 	/* Load config from file */
-	config_init(&cfg);
 	loadConfig(&cfg,config,&waittime,&serial,&log,&html);
 	
 	/* Main loop */
