@@ -11,19 +11,16 @@ test -x "$DAEMON" || exit 0
 case "$1" in
 start)
 echo -n "Starting $SERVICE ... "
-$DAEMON $ARGS
-echo "$NAME."
+$DAEMON $ARGS 2>/dev/null && echo "$NAME." || echo "error!"
 ;;
 stop)
 echo -n "Stopping $SERVICE ... "
-killall --quiet "$DAEMON"
-echo "$NAME."
+killall --quiet "$DAEMON" && echo "$NAME." || echo "not running!"
 ;;
 restart|force-reload)
-echo -n "Restarting $SERVICE ... "
-killall --quiet "$DAEMON"
+"$0" stop
 sleep 1
-$DAEMON $ARGS
+"$0" start
 ;;
 *)
 printf "Usage: %q {start|stop|restart|force-reload}\n" "$0" >&2
