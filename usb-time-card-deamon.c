@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <libconfig.h>
+#include <time.h>
 
 /* Global variable for SIGTERM handling */
 int gcont;
@@ -109,10 +110,19 @@ int USBDiskPresent(const char * serial) {
 }
 
 /* Write the status to log */
-void writeStatus(const char * serial, int present) {
-	/* TODO write to the log */
-	if (present) printf("Device %s connected.\n",serial);
-	else         printf("Device %s disconnected.\n",serial);
+void writeStatus(const char * serial, int present, const char * log) {
+	const char *way;
+	time_t now;
+	FILE *logfile;
+	
+
+	if (present) way = " in";
+	else         way = "out";
+	time(&now);
+	logfile = fopen(log,"a+");
+	fprintf(logfile,"%s: %s %s",serial,way,ctime(&now));
+	fclose(logfile);
+	
 	/* TODO regenerate HTML */
 }
 
@@ -124,15 +134,17 @@ void term(int signum) {
 
 int main(void) {
 	int present, waittime;
-	const char * config, * serial, * log, * html;
+	const char *config, *serial, *log, *html;
 	config_t cfg;
 	
 	/* Config file */
 	/* TODO load from --config option */
 	config = "/home/churchyard/tmp/skola/ADS/usb-time-card/usb-time-card.conf";
 	
-	/* Handle SIGTERM */
+	/* Handle SIGTERM and more */
 	signal(SIGTERM, term);
+	signal(SIGHUP, term);
+	signal(SIGINT, term);
 	
 	/* Continue */
 	gcont = 1;
@@ -147,14 +159,14 @@ int main(void) {
 	while (gcont) {
 		if (USBDiskPresent(serial) != present) {
 			present = ! present;
-			writeStatus(serial,present);
+			writeStatus(serial,present,log);
 		}
 		sleep(waittime);
 	}
 	
 	/* Here we are after SIGTERM.
 	   If the device is present, fake disconnect */
-	if (present) writeStatus(serial,0);
+	if (present) writeStatus(serial,0,log);
 	
 	/* Destroy config */
 	config_destroy(&cfg);

@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -pedantic
+CFLAGS=-Wall -pedantic -g
 LIBS=-ludev -lconfig
 
 usb-time-card-deamon: usb-time-card-deamon.c
