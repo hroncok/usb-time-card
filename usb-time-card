@@ -3,24 +3,31 @@ NAME=$(basename "$0")
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 SERVICE="USB Time Card"
 DAEMON="usb-time-card-deamon"
-ARGS="--config /etc/usb-time-card"
+CONFIG="/etc/usb-time-card"
+ARGS="--config $CONFIG"
 RETVAL=0
 
 test -x "$DAEMON" || exit 0
 
 case "$1" in
 start)
-echo -n "Starting $SERVICE ... "
-$DAEMON $ARGS 2>/dev/null && echo "$NAME." || echo "error!"
+  echo -n "Starting $SERVICE ... "
+  if ! pidof "$DAEMON" >/dev/null 
+  then
+    $DAEMON $ARGS &
+    echo "$NAME."
+  else
+    echo "running already!"
+  fi
 ;;
 stop)
-echo -n "Stopping $SERVICE ... "
-killall --quiet "$DAEMON" && echo "$NAME." || echo "not running!"
+  echo -n "Stopping $SERVICE ... "
+  killall --quiet "$DAEMON" && echo "$NAME." || echo "not running!"
 ;;
 restart|force-reload)
-"$0" stop
-sleep 1
-"$0" start
+  "$0" stop
+  sleep 1
+  "$0" start
 ;;
 *)
 printf "Usage: %q {start|stop|restart|force-reload}\n" "$0" >&2
