@@ -5,9 +5,32 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+#include <libconfig.h>
 
 /* Global variable for SIGTERM handling */
 int gcont;
+
+/* Default configuration */
+void defaultConfig(int * waittime,const char ** serial,const char ** log,const char ** html) {
+	*waittime = 300;
+	*serial = "111111111111111";
+	*log = "/var/log/usb-time-card.log";
+	*html = "/var/www/usb-time-card/index.html";
+}
+
+/* In file configuration */
+void loadConfig(config_t *cf, const char * config, int * waittime,const char ** serial,const char ** log,const char ** html) {
+	if (!config_read_file(cf, config)) {
+		fprintf(stderr, "%s:%d - %s\n",config_error_file(cf),config_error_line(cf),config_error_text(cf));
+		config_destroy(cf);
+		exit(1);
+	}
+	
+	config_lookup_int(cf, "waittime", waittime);
+	config_lookup_string(cf, "serial", serial);
+	config_lookup_string(cf, "log", log);
+	config_lookup_string(cf, "html", html);
+}
 
 /* Determinate, if the USB disk is present */
 int USBDiskPresent(const char * serial) {
@@ -83,10 +106,14 @@ void term(int signum) {
 	gcont = 0;
 }
 
-
 int main(void) {
 	int present, waittime;
-	char * serial;
+	const char * config, * serial, * log, * html;
+	config_t cfg, *cf;
+	
+	/* Config file */
+	/* TODO load from --config option */
+	config = "/home/churchyard/tmp/skola/ADS/usb-time-card/usb-time-card.conf";
 	
 	/* Handle SIGTERM */
 	signal(SIGTERM, term);
@@ -98,9 +125,12 @@ int main(void) {
 	present = 0;
 	
 	/* Default config */
-	/* TODO Load config file */
-	waittime = 2;
-	serial = "7FA11D00715C0087";
+	defaultConfig(&waittime,&serial,&log,&html);
+	
+	/* Load config from file */
+	cf = &cfg;
+	config_init(cf);
+	loadConfig(cf,config,&waittime,&serial,&log,&html);
 	
 	/* Main loop */
 	while (gcont) {
@@ -114,5 +144,8 @@ int main(void) {
 	/* Here we are after SIGTERM.
 	   If the device is present, fake disconnect */
 	if (present) writeStatus(serial,0);
+	
+	/* Destroy config */
+	config_destroy(cf);
 	return 0;
 }
