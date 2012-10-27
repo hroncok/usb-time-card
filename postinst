@@ -1,0 +1,5 @@
+#!/bin/sh
+
+#...
+
+update-rc.d usb-time-card defaults

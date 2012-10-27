@@ -1,0 +1,34 @@
+#!/bin/sh
+NAME=$(basename "$0")
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+SERVICE="USB Time Card"
+DAEMON="usb-time-card-deamon"
+ARGS="--config /etc/usb-time-card"
+RETVAL=0
+
+test -x "$DAEMON" || exit 0
+
+case "$1" in
+start)
+echo -n "Starting $SERVICE ... "
+$DAEMON $ARGS
+echo "$NAME."
+;;
+stop)
+echo -n "Stopping $SERVICE ... "
+killall --quiet "$DAEMON"
+echo "$NAME."
+;;
+restart|force-reload)
+echo -n "Restarting $SERVICE ... "
+killall --quiet "$DAEMON"
+sleep 1
+$DAEMON $ARGS
+;;
+*)
+printf "Usage: %q {start|stop|restart|force-reload}\n" "$0" >&2
+exit 1
+;;
+esac
+
+exit 0
