@@ -4,7 +4,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 
+/* Global variable for SIGTERM handling */
+int cont;
+
+/* Determinate, if the USB disk is present */
 int USBDiskPresent(const char * serial) {
 	/* Lots of things copied from this tutorial:
 	   http://www.signal11.us/oss/udev/
@@ -64,14 +69,47 @@ int USBDiskPresent(const char * serial) {
 	return 0;       
 }
 
+/* Write the status to log */
+void writeStatus(const char * serial, int present) {
+	if (present) printf("Device %s connected.\n",serial);
+	else         printf("Device %s disconnected.\n",serial);
+}
+
+/* This happens when SIGTERM */
+void term(int signum) {
+	/* Do not continue */
+	cont = 0;
+}
+
+
 int main(void) {
-	for (;;) {
-		if (USBDiskPresent("7FA11D00715C0087")) {
-			printf("Device is present\n");
-		} else {
-			printf("Device not present\n");
+	int present, waittime;
+	char * serial;
+	
+	/* Handle SIGTERM */
+	signal(SIGTERM, term);
+	
+	/* Continue */
+	cont = 1;
+	
+	/* Device is not present at start */
+	present = 0;
+	
+	/* Default config */
+	waittime = 2;
+	serial = "7FA11D00715C0087";
+	
+	/* Main loop */
+	while (cont) {
+		if (USBDiskPresent(serial) != present) {
+			present = ! present;
+			writeStatus(serial,present);
 		}
-		sleep(2);
+		sleep(waittime);
 	}
+	
+	/* Here we are after SIGTERM.
+	   If the device is present, fake disconnect */
+	if (present) writeStatus(serial,0);
 	return 0;
 }
