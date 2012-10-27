@@ -7,7 +7,7 @@
 #include <signal.h>
 
 /* Global variable for SIGTERM handling */
-int cont;
+int gcont;
 
 /* Determinate, if the USB disk is present */
 int USBDiskPresent(const char * serial) {
@@ -80,7 +80,7 @@ void writeStatus(const char * serial, int present) {
 /* This happens when SIGTERM */
 void term(int signum) {
 	/* Do not continue */
-	cont = 0;
+	gcont = 0;
 }
 
 
@@ -92,7 +92,7 @@ int main(void) {
 	signal(SIGTERM, term);
 	
 	/* Continue */
-	cont = 1;
+	gcont = 1;
 	
 	/* Device is not present at start */
 	present = 0;
@@ -103,7 +103,7 @@ int main(void) {
 	serial = "7FA11D00715C0087";
 	
 	/* Main loop */
-	while (cont) {
+	while (gcont) {
 		if (USBDiskPresent(serial) != present) {
 			present = ! present;
 			writeStatus(serial,present);
