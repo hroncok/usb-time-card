@@ -10,6 +10,8 @@ int USBDiskPresent(const char * serial) {
 	/* Lots of things copied from this tutorial:
 	   http://www.signal11.us/oss/udev/
 	   
+	   It says:
+	   
 	   This code is meant to be a teaching
 	   resource. It can be used for anyone for
 	   any reason, including embedding into
