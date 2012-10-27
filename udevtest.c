@@ -1,7 +1,6 @@
 #include <libudev.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -45,18 +44,17 @@ int USBDiskPresent(const char * serial) {
 		/* The device pointed to by dev contains information about
 		   the block device. In order to get information about the
 		   USB device, get the parent device with the
-		   subsystem/devtype pair of "usb"/"usb_device". This will
-		   be several levels up the tree, but the function will find
-		   it. */
+		   subsystem/devtype pair of "usb"/"usb_device". */
 		dev = udev_device_get_parent_with_subsystem_devtype(dev,"usb","usb_device");
 		if (dev) {
 			if (! strcmp(udev_device_get_sysattr_value(dev, "serial"),serial)) {
-				/* Clean stuff and go */
+				/* Free the device and enumerator objects */
 				udev_device_unref(dev);
 				udev_enumerate_unref(enumerate);
 				udev_unref(udev);
 				return 1;
 			}
+			/* Free the device object anyway */
 			udev_device_unref(dev);
 		}
 	}
