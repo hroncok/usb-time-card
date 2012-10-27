@@ -109,7 +109,7 @@ void term(int signum) {
 int main(void) {
 	int present, waittime;
 	const char * config, * serial, * log, * html;
-	config_t cfg, *cf;
+	config_t cfg;
 	
 	/* Config file */
 	/* TODO load from --config option */
@@ -128,9 +128,8 @@ int main(void) {
 	defaultConfig(&waittime,&serial,&log,&html);
 	
 	/* Load config from file */
-	cf = &cfg;
-	config_init(cf);
-	loadConfig(cf,config,&waittime,&serial,&log,&html);
+	config_init(&cfg);
+	loadConfig(&cfg,config,&waittime,&serial,&log,&html);
 	
 	/* Main loop */
 	while (gcont) {
@@ -146,6 +145,6 @@ int main(void) {
 	if (present) writeStatus(serial,0);
 	
 	/* Destroy config */
-	config_destroy(cf);
+	config_destroy(&cfg);
 	return 0;
 }
