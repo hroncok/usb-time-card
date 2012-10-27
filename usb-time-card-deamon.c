@@ -30,6 +30,12 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 	config_lookup_string(cf, "serial", serial);
 	config_lookup_string(cf, "log", log);
 	config_lookup_string(cf, "html", html);
+	
+	if (*waittime < 0) {
+		fprintf(stderr, "Found negative value in waittime variable in config file. Not going to work.\n");
+		config_destroy(cf);
+		exit(1);
+	}
 }
 
 /* Determinate, if the USB disk is present */
