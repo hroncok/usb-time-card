@@ -7,7 +7,7 @@ usb-time-card-deamon: usb-time-card-deamon.c
 
 all: usb-time-card-deamon
 
-preinstall: usb-time-card-deamon
+root: usb-time-card-deamon usb-time-card usb-time-card.conf
 	mkdir -p root/usr/bin
 	mkdir -p root/usr/src
 	mkdir -p root/etc/init.d
@@ -16,6 +16,13 @@ preinstall: usb-time-card-deamon
 	cp usb-time-card.conf root/etc
 	cp usb-time-card-deamon root/usr/bin
 	cp usb-time-card-deamon.c COPYING README.md root/usr/src/
+
+install: root
+	cp -ra root/* /
+	update-rc.d usb-time-card defaults
+
+debian: root
+	cp -ra DEBIAN root
 
 clean: 
 	rm usb-time-card-deamon
