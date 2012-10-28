@@ -94,13 +94,13 @@ int USBDiskPresent(const char * serial) {
 	devices = udev_enumerate_get_list_entry(enumerate);
 	
 	/* For each item enumerated, chceck if it's our device */
-	udev_list_entry_foreach(dev_list_entry, devices) {
+	udev_list_entry_foreach(dev_list_entry,devices) {
 		const char *path;
 		
 		/* Get the filename of the /sys entry for the device
 		   and create a udev_device object (dev) representing it */
 		path = udev_list_entry_get_name(dev_list_entry);
-		dev = udev_device_new_from_syspath(udev, path);
+		dev = udev_device_new_from_syspath(udev,path);
 
 		/* The device pointed to by dev contains information about
 		   the block device. In order to get information about the
@@ -108,7 +108,7 @@ int USBDiskPresent(const char * serial) {
 		   subsystem/devtype pair of "usb"/"usb_device". */
 		dev = udev_device_get_parent_with_subsystem_devtype(dev,"usb","usb_device");
 		if (dev) {
-			if (! strcmp(udev_device_get_sysattr_value(dev, "serial"),serial)) {
+			if (! strcmp(udev_device_get_sysattr_value(dev,"serial"),serial)) {
 				/* Free the device and enumerator objects */
 				udev_device_unref(dev);
 				udev_enumerate_unref(enumerate);
@@ -126,7 +126,7 @@ int USBDiskPresent(const char * serial) {
 }
 
 /* Proccess the file backquards */
-void backquards(FILE * logfile,FILE * htmlfile) {
+void backquards(FILE * logfile, FILE * htmlfile) {
 	/* This trick with recursion is from here:
 	   http://www.linuxquestions.org/questions/programming-9/c-to-reverse-a-text-file-697749/#post3411377 */
 	char line[50];
@@ -138,11 +138,11 @@ void backquards(FILE * logfile,FILE * htmlfile) {
 		return;
 	}
 	backquards(logfile,htmlfile);
-	fprintf(htmlfile,"\t\t<tr class=\"%s\">\n",strndup(line+18, 3));
-	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line, 16));
-	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+18, 3));
-	fprintf(htmlfile,"\t\t\t<td>%s %s</td>\n",strndup(line+22, 10),strndup(line+42, 4));
-	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+33, 5));
+	fprintf(htmlfile,"\t\t<tr class=\"%s\">\n",strndup(line+18,3));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line,16));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+18,3));
+	fprintf(htmlfile,"\t\t\t<td>%s %s</td>\n",strndup(line+22,10),strndup(line+42,4));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+33,5));
 	fprintf(htmlfile,"\t\t</tr>\n");
 }
 
@@ -226,9 +226,9 @@ int main(void) {
 	config = "/home/churchyard/tmp/skola/ADS/usb-time-card/usb-time-card.conf";
 	
 	/* Handle SIGTERM and more */
-	signal(SIGTERM, term);
-	signal(SIGHUP, term);
-	signal(SIGINT, term);
+	signal(SIGTERM,term);
+	signal(SIGHUP,term);
+	signal(SIGINT,term);
 	
 	/* Continue */
 	gcont = 1;
