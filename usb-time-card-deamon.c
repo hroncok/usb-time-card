@@ -38,7 +38,7 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 	if (!config_read_file(cf, config)) {
 		fprintf(stderr, "%s:%d - %s\n",config_error_file(cf),config_error_line(cf),config_error_text(cf));
 		config_destroy(cf);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	
 	/* Load variables */
@@ -51,7 +51,7 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 	if (*waittime < 0) {
 		fprintf(stderr, "Found negative value in waittime variable in config file. Not going to work.\n");
 		config_destroy(cf);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	
 	/* Destroy config before exiting the program */
@@ -84,7 +84,7 @@ int USBDiskPresent(const char * serial) {
 	/* Create the udev object */
 	if (!(udev = udev_new())) {
 		perror("Can't create udev");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	
 	/* Create a list of the devices in the 'block' subsystem */
@@ -133,7 +133,7 @@ void backquards(FILE * logfile, FILE * htmlfile) {
 	if(! fgets(line,sizeof(line),logfile)) {
 		if(!feof(logfile)) {
 			perror("Log file input error");
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		return;
 	}
@@ -155,7 +155,7 @@ void exportHTML(const char * log, const char * html) {
 	logfile = fopen(log,"r");
 	if (!logfile) {
 		perror("Cannot open log file for reading");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	
 	/* Open HTML file for (re)writing */
@@ -163,7 +163,7 @@ void exportHTML(const char * log, const char * html) {
 	htmlfile = fopen(html,"w");
 	if (!htmlfile) {
 		perror("Cannot open HTML file for writing");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	
 	/* HTML head */
@@ -202,12 +202,23 @@ void writeStatus(const char * serial, int present, const char * log, const char 
 	logfile = fopen(log,"a");
 	if (!logfile) {
 		perror("Cannot open log file for writing");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	fprintf(logfile,"%s: %s %s",serial,way,ctime(&now));
 	fclose(logfile);
 	
 	exportHTML(log,html);
+}
+
+/* Chceck if the config file exist */
+void checkFile(char * filename) {
+	FILE *file;
+	file = fopen(filename,"r");
+	if (!file) {
+		perror("Cannot open config file");
+		exit(EXIT_FAILURE);
+	}
+	fclose(file);
 }
 
 /* This happens when SIGTERM */
@@ -216,14 +227,17 @@ void term(int signum) {
 	gcont = 0;
 }
 
-int main(void) {
+int main(int argc, char **argv) {
 	int present, waittime;
-	const char *config, *serial, *log, *html;
+	const char *serial, *log, *html;
 	config_t cfg;
 	
 	/* Config file */
-	/* TODO load from --config option */
-	config = "/home/churchyard/tmp/skola/ADS/usb-time-card/usb-time-card.conf";
+	if ((argc != 3) || strcmp(argv[1],"--config")) {
+		fprintf(stderr,"Usage: %s --config /etc/usb-time-card.conf\n",argv[0]);
+		exit(EXIT_FAILURE);
+	}
+	checkFile(argv[2]);
 	
 	/* Handle SIGTERM and more */
 	signal(SIGTERM,term);
@@ -237,7 +251,7 @@ int main(void) {
 	present = 0;
 	
 	/* Load config from file */
-	loadConfig(&cfg,config,&waittime,&serial,&log,&html);
+	loadConfig(&cfg,argv[2],&waittime,&serial,&log,&html);
 	
 	/* Main loop */
 	while (gcont) {
@@ -254,5 +268,5 @@ int main(void) {
 	
 	/* Destroy config */
 	config_destroy(&cfg);
-	return 0;
+	return EXIT_SUCCESS;
 }
