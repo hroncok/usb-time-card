@@ -3,3 +3,4 @@ usb-time-card.log
 usb-time-card.html
 my_usb-time-card.conf
 root
+*.deb

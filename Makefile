@@ -23,7 +23,7 @@ install: root
 
 debian: root
 	cp -ra DEBIAN root
+	dpkg -b root usb-time-card_0.1_amd64.deb
 
 clean: 
-	rm usb-time-card-deamon
-	rm root -rf
+	rm usb-time-card-deamon root *.deb -rf
