@@ -14,6 +14,7 @@
 #define HTMLFILE	"/var/www/usb-time-card/index.html"
 #define LINK		"https://github.com/hroncok/usb-time-card"
 #define COPY		"Miro Hrončok [<a href=\"http://hroncok.cz/\">hroncok.cz</a>]"
+#define CSS			"\t<style>\n\t\tbody {font-family: sans-serif;}\n\t\ttable {border: 1px solid; width:30em; margin-left: auto; margin-right: auto; border-spacing:0; border-collapse:collapse;}\n\t\tth {text-align: left; background-color: #EFF673;}\n\t\ttr.out {background-color: #F68873;}\n\t\ttr.in {background-color: #78F673;}\n\t\t#copyright {text-align: center;}\n\t</style>"
 
 /* Global variable for SIGTERM handling */
 int gcont;
@@ -129,7 +130,7 @@ void backquards(FILE * logfile,FILE * htmlfile) {
 		return;
 	}
 	backquards(logfile,htmlfile);
-	fprintf(htmlfile,"\t\t<tr>\n");
+	fprintf(htmlfile,"\t\t<tr class=\"%s\">\n",strndup(line+18, 3));
 	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line, 16));
 	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+18, 3));
 	fprintf(htmlfile,"\t\t\t<td>%s %s</td>\n",strndup(line+22, 10),strndup(line+42, 4));
@@ -157,10 +158,10 @@ void exportHTML(const char * log, const char * html) {
 	}
 	
 	/* HTML head */
-	fprintf(htmlfile,"<html>\n<head>\n\t<title>USB Time Card Log</title>\n\t<meta charset=\"utf-8\">\n</head>\n");
-	/* TODO CSS */
-	fprintf(htmlfile,"<body>\n\t<table>\n\t\t<tr>\n");
-	fprintf(htmlfile,"\t\t\t<th>Device</th>\n\t\t\t<th>Way</th>\n\t\t\t<th>Date</th>\n\t\t\t<th>Time</th>\n\t\t</tr>\n");
+	fprintf(htmlfile,"<html>\n<head>\n\t<title>USB Time Card Log</title>\n\t<meta charset=\"utf-8\">\n");
+	fprintf(htmlfile,CSS);
+	fprintf(htmlfile,"</head>\n<body>\n\t<table>\n\t  <thead>\n\t\t<tr>\n");
+	fprintf(htmlfile,"\t\t\t<th>Device</th>\n\t\t\t<th>Way</th>\n\t\t\t<th>Date</th>\n\t\t\t<th>Time</th>\n\t\t</tr>\n\t  </thead>\n\t  <tbody>\n");
 	
 	/* Proccess the file backquards */
 	backquards(logfile,htmlfile);
@@ -169,7 +170,7 @@ void exportHTML(const char * log, const char * html) {
 	fclose(logfile);
 	
 	/* HTML tail */
-	fprintf(htmlfile,"\t</table>\n\t<p id=\"copyright\"><a href=\"%s\">USB Time Card</a> ",LINK);
+	fprintf(htmlfile,"\t  </tbody>\n\t</table>\n\t<p id=\"copyright\"><a href=\"%s\">USB Time Card</a> ",LINK);
 	fprintf(htmlfile,"&copy; %s</p>\n</body>\n</html>\n",COPY);
 	
 	/* Close HTML file */
