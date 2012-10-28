@@ -57,6 +57,14 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 	/* Destroy config before exiting the program */
 }
 
+/* Call system("mkdir -p dirname");
+   This is the most easy solution */
+void mkdirp(const char * filename) {
+	char cmd[500];
+	sprintf(cmd,"mkdir -p %s 2>/dev/null",strndup(filename, strrchr(filename,'/')-filename));
+	system(cmd);
+}
+
 /* Determinate, if the USB disk is present */
 int USBDiskPresent(const char * serial) {
 	/* Lots of things copied from this tutorial:
@@ -151,6 +159,7 @@ void exportHTML(const char * log, const char * html) {
 	}
 	
 	/* Open HTML file for (re)writing */
+	mkdirp(html);
 	htmlfile = fopen(html,"w");
 	if (!htmlfile) {
 		perror("Cannot open HTML file for writing");
@@ -189,6 +198,7 @@ void writeStatus(const char * serial, int present, const char * log, const char 
 	time(&now);
 	
 	/* Open logfile for appending */
+	mkdirp(log);
 	logfile = fopen(log,"a");
 	if (!logfile) {
 		perror("Cannot open log file for writing");
