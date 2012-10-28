@@ -8,15 +8,22 @@
 #include <libconfig.h>
 #include <time.h>
 
+#define TIME		300
+#define SERIAL		"111111111111111"
+#define LOGFILE		"/var/log/usb-time-card.log"
+#define HTMLFILE	"/var/www/usb-time-card/index.html"
+#define LINK		"https://github.com/hroncok/usb-time-card"
+#define COPY		"Miro Hrončok [<a href=\"http://hroncok.cz/\">hroncok.cz</a>]"
+
 /* Global variable for SIGTERM handling */
 int gcont;
 
 /* Default configuration */
 void defaultConfig(int * waittime,const char ** serial,const char ** log,const char ** html) {
-	*waittime = 300;
-	*serial = "111111111111111";
-	*log = "/var/log/usb-time-card.log";
-	*html = "/var/www/usb-time-card/index.html";
+	*waittime = TIME;
+	*serial = SERIAL;
+	*log = LOGFILE;
+	*html = HTMLFILE;
 }
 
 /* In file configuration */
@@ -109,6 +116,27 @@ int USBDiskPresent(const char * serial) {
 	return 0;       
 }
 
+/* Proccess the file backquards */
+void backquards(FILE * logfile,FILE * htmlfile) {
+	/* This trick with recursion is from here:
+	   http://www.linuxquestions.org/questions/programming-9/c-to-reverse-a-text-file-697749/#post3411377 */
+	char line[50];
+	if(! fgets(line,sizeof(line),logfile)) {
+		if(!feof(logfile)) {
+			perror("Log file input error");
+			exit(1);
+		}
+		return;
+	}
+	backquards(logfile,htmlfile);
+	fprintf(htmlfile,"\t\t<tr>\n");
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line, 16));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+18, 3));
+	fprintf(htmlfile,"\t\t\t<td>%s %s</td>\n",strndup(line+22, 10),strndup(line+42, 4));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+33, 5));
+	fprintf(htmlfile,"\t\t</tr>\n");
+}
+
 /* Read the log and rebuild HTML page */
 void exportHTML(const char * log, const char * html) {
 	FILE *logfile;
@@ -129,21 +157,22 @@ void exportHTML(const char * log, const char * html) {
 	}
 	
 	/* HTML head */
-	fprintf(htmlfile,"<html>\n");
-	fprintf(htmlfile,"<head>\n");
-	fprintf(htmlfile,"\t<title>USB Time Card Log</title>\n");
-	fprintf(htmlfile,"\t<meta charset=\"utf-8\">\n");
-	fprintf(htmlfile,"</head>\n");
-	fprintf(htmlfile,"<body>\n");
+	fprintf(htmlfile,"<html>\n<head>\n\t<title>USB Time Card Log</title>\n\t<meta charset=\"utf-8\">\n</head>\n");
+	/* TODO CSS */
+	fprintf(htmlfile,"<body>\n\t<table>\n\t\t<tr>\n");
+	fprintf(htmlfile,"\t\t\t<th>Device</th>\n\t\t\t<th>Way</th>\n\t\t\t<th>Date</th>\n\t\t\t<th>Time</th>\n\t\t</tr>\n");
 	
-	/* TODO Stuff here */
+	/* Proccess the file backquards */
+	backquards(logfile,htmlfile);
+	
+	/* Close log file */
+	fclose(logfile);
 	
 	/* HTML tail */
-	fprintf(htmlfile,"</body>\n");
-	fprintf(htmlfile,"</html>\n");
+	fprintf(htmlfile,"\t</table>\n\t<p id=\"copyright\"><a href=\"%s\">USB Time Card</a> ",LINK);
+	fprintf(htmlfile,"&copy; %s</p>\n</body>\n</html>\n",COPY);
 	
-	/* Close files */
-	fclose(logfile);
+	/* Close HTML file */
 	fclose(htmlfile);
 }
 
