@@ -8,6 +8,7 @@ usb-time-card-deamon: usb-time-card-deamon.c
 all: usb-time-card-deamon
 
 root: usb-time-card-deamon usb-time-card usb-time-card.conf usb-time-card.1
+	rm root -rf
 	mkdir -p root/usr/bin
 	mkdir -p root/usr/src
 	mkdir -p root/etc/init.d
@@ -25,6 +26,7 @@ install: root
 	update-rc.d usb-time-card defaults
 
 debian: root
+	rm root/DEBIAN -rf
 	cp -ra DEBIAN root
 	dpkg -b root usb-time-card_0.1_amd64.deb
 
