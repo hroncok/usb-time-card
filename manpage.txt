@@ -1,0 +1,43 @@
+.TH USB-TIME-CARD 1 LOCAL
+.SH NAME
+usb-time-card - Logs presence of your USB stick
+.SH SYNOPSIS
+The init script is available, it uses /etc/usb-time-card.conf
+
+.B /etc/init.d/usb-time-card
+start|stop|restart 
+
+Or manually
+
+.B usb-time-card-deamon --config
+.I CONFIG_FILE
+.SH AVAILABILITY
+Tested on Linux. Should run on any system with udev.
+.SH DESCRIPTION
+usb-time-card monitors presence of a particular USB disk device (such as USB Flash Drive). It outputs the results to several formats, currently plaintext and HTML. Runs as a deamon.
+.SH OPTIONS
+When running manually, there is only one mandatory option
+.TP 5
+--config
+Path to config file. Default config file in /etc/usb-time-card.conf is loaded when using the init script. The config file is inline documented.
+.SH NOTES
+Tracked device is specified in the config. You have to change the serial number in there. Determinate your device's serial number by command:
+
+.B cat /proc/scsi/usb-storage/*
+.SH AUTHOR
+Miro Hroncok <miro@hroncok.cz>
+.SH FILES
+.B /etc/init.d/usb-time-card
+- the init script
+
+.B /usr/bin/usb-time-card-deamon
+- the deamon executable
+
+.B /etc/usb-time-card.conf
+- default config
+
+.B /var/log/usb-time-card.log
+- default log file
+
+.B /var/www/usb-time-card/index.html
+- default HTML output
