@@ -1,5 +1,5 @@
 Package: usb-time-card
-Version: 0.4.3
+Version: VERSION
 Section: system
 Priority: optional
 Architecture: amd64
