@@ -3,7 +3,7 @@ Version: 0.1
 Section: system
 Priority: optional
 Architecture: amd64
-Depends: coreutils, libudev0, libconfig9, libc6
+Depends: coreutils, libudev0 (>= 175), libconfig9 (>= 1.4.8)
 Suggests: apache2 | nginx | cherokee | lighttpd
 Installed-Size: 88
 Maintainer: Miro Hrončok <miro@hroncok.cz>
