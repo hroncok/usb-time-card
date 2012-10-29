@@ -3,7 +3,7 @@ NAME=$(basename "$0")
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 SERVICE="USB Time Card"
 DAEMON="usb-time-card-deamon"
-CONFIG="/etc/usb-time-card"
+CONFIG="/etc/usb-time-card.conf"
 ARGS="--config $CONFIG"
 RETVAL=0
 
