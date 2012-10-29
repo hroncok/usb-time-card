@@ -57,14 +57,14 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 	}
 	
 	/* Create output */
-	mkdirp(log);
-	logfile = fopen(log,"a");
+	mkdirp(*log);
+	logfile = fopen(*log,"a");
 	if (!logfile) {
 		perror("Cannot open log file for writing");
 		exit(EXIT_FAILURE);
 	}
 	fclose(logfile);
-	exportHTML(log,html);
+	exportHTML(*log,*html);
 	
 	/* Destroy config before exiting the program */
 }
