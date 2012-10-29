@@ -7,8 +7,6 @@ CONFIG="/etc/usb-time-card.conf"
 ARGS="--config $CONFIG"
 RETVAL=0
 
-test -x "$DAEMON" || exit 0
-
 case "$1" in
 start)
   echo -n "Starting $SERVICE ... "
@@ -30,8 +28,8 @@ restart|force-reload)
   "$0" start
 ;;
 *)
-printf "Usage: %q {start|stop|restart|force-reload}\n" "$0" >&2
-exit 1
+  echo "Usage:" "$0" "{start|stop|restart|force-reload}"
+  exit 1
 ;;
 esac
 
