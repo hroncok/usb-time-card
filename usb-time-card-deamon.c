@@ -29,6 +29,8 @@ void defaultConfig(int * waittime,const char ** serial,const char ** log,const c
 
 /* In file configuration */
 void loadConfig(config_t *cf, const char * config, int * waittime,const char ** serial,const char ** log,const char ** html) {
+	FILE *logfile;
+	
 	/* Default config */
 	defaultConfig(waittime,serial,log,html);
 	
@@ -53,6 +55,16 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 		config_destroy(cf);
 		exit(EXIT_FAILURE);
 	}
+	
+	/* Create output */
+	mkdirp(log);
+	logfile = fopen(log,"a");
+	if (!logfile) {
+		perror("Cannot open log file for writing");
+		exit(EXIT_FAILURE);
+	}
+	fclose(logfile);
+	exportHTML(log,html);
 	
 	/* Destroy config before exiting the program */
 }
