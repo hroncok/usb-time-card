@@ -2,7 +2,7 @@ Package: usb-time-card
 Version: VERSION
 Section: system
 Priority: optional
-Architecture: amd64
+Architecture: ARCH
 Depends: coreutils, libudev0, libconfig9
 Suggests: apache2 | nginx | cherokee | lighttpd
 Installed-Size: 88

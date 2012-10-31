@@ -26,11 +26,19 @@ install: root
 	cp -ra root/* /
 	update-rc.d usb-time-card defaults
 
-debian: root
+debian64: root
 	rm root/DEBIAN -rf
 	cp -ra DEBIAN root
 	sed -i "s/VERSION/$(VERSION)/" root/DEBIAN/control
+	sed -i "s/ARCH/amd64/" root/DEBIAN/control
 	dpkg -b root usb-time-card_$(VERSION)_amd64.deb
+
+debian32: root
+	rm root/DEBIAN -rf
+	cp -ra DEBIAN root
+	sed -i "s/VERSION/$(VERSION)/" root/DEBIAN/control
+	sed -i "s/ARCH/i386/" root/DEBIAN/control
+	dpkg -b root usb-time-card_$(VERSION)_i386.deb
 
 clean: 
 	rm usb-time-card-deamon root *.deb -rf
