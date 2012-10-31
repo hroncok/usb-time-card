@@ -14,4 +14,4 @@ after_script:
  - sudo /etc/init.d/usb-time-card start
  - sleep 3
  - sudo /etc/init.d/usb-time-card stop
- - ls -l /var/www/usb-time-card
+ - cat /var/www/usb-time-card/index.html
