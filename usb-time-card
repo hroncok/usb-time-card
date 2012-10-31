@@ -1,4 +1,13 @@
 #!/bin/sh
+### BEGIN INIT INFO
+# Provides:          usb-time-card
+# Required-Start:    $remote_fs $time
+# Required-Stop:     $remote_fs $time
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: start usb-time-card
+# Description:       Logs presence of your USB stick.
+### END INIT INFO
 NAME=$(basename "$0")
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 SERVICE="USB Time Card"
