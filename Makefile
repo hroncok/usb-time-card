@@ -37,6 +37,7 @@ debian: root
 	cp -ra DEBIAN root
 	sed -i "s/VERSION/$(VERSION)/" root/DEBIAN/control
 	sed -i "s/ARCH/$(ARCH)/" root/DEBIAN/control
+	sed -i "s/SIZE/$$((`du -s root | cut -f1`-`du -s root/DEBIAN | cut -f1`))/" root/DEBIAN/control
 	dpkg -b root usb-time-card_$(VERSION)_$(ARCH).deb
 
 clean: 

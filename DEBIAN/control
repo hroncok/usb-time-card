@@ -5,6 +5,6 @@ Priority: optional
 Architecture: ARCH
 Depends: coreutils, libudev0, libconfig9
 Suggests: apache2 | nginx | cherokee | lighttpd
-Installed-Size: 88
+Installed-Size: SIZE
 Maintainer: Miro Hrončok <miro@hroncok.cz>
 Description: This software monitors presence of a particular USB disk device (such as USB Flash Drive). It outputs the results to several formats, currently plaintext and HTML. Runs as a deamon.
