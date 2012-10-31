@@ -4,7 +4,7 @@ LIBS=-ludev -lconfig
 VERSION=$(shell grep "define VERSION" usb-time-card-deamon.c | cut -f3 -d" " | cut -f2 -d\")
 
 ifeq "$(shell uname -m)" "x86_64"
-	ARCH=adm64
+	ARCH=amd64
 else
 	ARCH=i386
 endif
