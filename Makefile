@@ -3,10 +3,10 @@ CFLAGS=-Wall -pedantic -g
 LIBS=-ludev -lconfig
 VERSION=$(shell grep "define VERSION" usb-time-card-deamon.c | cut -f3 -d" " | cut -f2 -d\")
 
+all: usb-time-card-deamon
+
 usb-time-card-deamon: usb-time-card-deamon.c
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-
-all: usb-time-card-deamon
 
 root: usb-time-card-deamon usb-time-card usb-time-card.conf usb-time-card.1
 	rm root -rf
