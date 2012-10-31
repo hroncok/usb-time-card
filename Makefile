@@ -3,6 +3,12 @@ CFLAGS=-Wall -pedantic -g
 LIBS=-ludev -lconfig
 VERSION=$(shell grep "define VERSION" usb-time-card-deamon.c | cut -f3 -d" " | cut -f2 -d\")
 
+ifeq "$(shell uname -m)" "x86_64"
+	ARCH=adm64
+else
+	ARCH=i386
+endif
+
 all: usb-time-card-deamon
 
 usb-time-card-deamon: usb-time-card-deamon.c
@@ -26,19 +32,12 @@ install: root
 	cp -ra root/* /
 	update-rc.d usb-time-card defaults
 
-debian64: root
+debian: root
 	rm root/DEBIAN -rf
 	cp -ra DEBIAN root
 	sed -i "s/VERSION/$(VERSION)/" root/DEBIAN/control
-	sed -i "s/ARCH/amd64/" root/DEBIAN/control
-	dpkg -b root usb-time-card_$(VERSION)_amd64.deb
-
-debian32: root
-	rm root/DEBIAN -rf
-	cp -ra DEBIAN root
-	sed -i "s/VERSION/$(VERSION)/" root/DEBIAN/control
-	sed -i "s/ARCH/i386/" root/DEBIAN/control
-	dpkg -b root usb-time-card_$(VERSION)_i386.deb
+	sed -i "s/ARCH/$(ARCH)/" root/DEBIAN/control
+	dpkg -b root usb-time-card_$(VERSION)_$(ARCH).deb
 
 clean: 
 	rm usb-time-card-deamon root *.deb -rf
