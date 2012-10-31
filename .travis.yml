@@ -11,7 +11,7 @@ script:
  - sudo dpkg -i *.deb
 
 after_script:
- - /etc/init.d/usb-time-card start
+ - sudo /etc/init.d/usb-time-card start
  - sleep 3
- - /etc/init.d/usb-time-card stop
+ - sudo /etc/init.d/usb-time-card stop
  - ls -l /var/www/usb-time-card
