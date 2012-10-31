@@ -2,7 +2,7 @@ language: c
 compiler: gcc
 
 before_install:
- - sudo sed -i '/precise/quantal/' /etc/apt/sources.lst # for libconfig9
+ - sudo sed -i 's/precise/quantal/' /etc/apt/sources.lst # for libconfig9
  - sudo apt-get update -qq
  - sudo apt-get install -qq libconfig9 libconfig-dev libudev-dev
 
