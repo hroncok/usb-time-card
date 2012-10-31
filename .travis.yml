@@ -1,0 +1,17 @@
+language: c
+compiler: gcc
+
+before_install:
+ - sudo sed -i '/precise/quantal/' /etc/apt/sources.lst # for libconfig9
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq libconfig9 libconfig-dev libudev-dev
+
+script:
+ - make debian
+ - sudo dpkg -i *.deb
+
+after_script:
+ - /etc/init.d/usb-time-card start
+ - sleep 3
+ - /etc/init.d/usb-time-card stop
+ - ls -l /var/www/usb-time-card
