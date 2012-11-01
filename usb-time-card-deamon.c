@@ -8,7 +8,7 @@
 #include <libconfig.h>
 #include <time.h>
 
-#define VERSION 	"0.5.1"
+#define VERSION 	"0.5.2"
 #define TIME		300
 #define SERIAL		"111111111111111"
 #define LOGFILE		"/var/log/usb-time-card.log"
@@ -30,7 +30,7 @@ void mkdirp(const char * filename) {
 
 
 /* Proccess the file backquards */
-void backquards(FILE * logfile, FILE * htmlfile) {
+void backquards(FILE * logfile, FILE * htmlfile, int sln) {
 	/* This trick with recursion is from here:
 	   http://www.linuxquestions.org/questions/programming-9/c-to-reverse-a-text-file-697749/#post3411377 */
 	char line[50];
@@ -41,17 +41,17 @@ void backquards(FILE * logfile, FILE * htmlfile) {
 		}
 		return;
 	}
-	backquards(logfile,htmlfile);
-	fprintf(htmlfile,"\t\t<tr class=\"%s\">\n",strndup(line+18,3));
-	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line,16));
-	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+18,3));
-	fprintf(htmlfile,"\t\t\t<td>%s %s</td>\n",strndup(line+22,10),strndup(line+42,4));
-	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+33,5));
+	backquards(logfile,htmlfile,sln);
+	fprintf(htmlfile,"\t\t<tr class=\"%s\">\n",strndup(line+sln+2,3));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line,sln));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+sln+2,3));
+	fprintf(htmlfile,"\t\t\t<td>%s %s</td>\n",strndup(line+sln+6,10),strndup(line+sln+26,4));
+	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+sln+17,5));
 	fprintf(htmlfile,"\t\t</tr>\n");
 }
 
 /* Read the log and rebuild HTML page */
-void exportHTML(const char * log, const char * html) {
+void exportHTML(const char * log, const char * html, int sln) {
 	FILE *logfile;
 	FILE *htmlfile;
 	
@@ -77,7 +77,7 @@ void exportHTML(const char * log, const char * html) {
 	fprintf(htmlfile,"\t\t\t<th>Device</th>\n\t\t\t<th>Way</th>\n\t\t\t<th>Date</th>\n\t\t\t<th>Time</th>\n\t\t</tr>\n\t  </thead>\n\t  <tbody>\n");
 	
 	/* Proccess the file backquards */
-	backquards(logfile,htmlfile);
+	backquards(logfile,htmlfile,sln);
 	
 	/* Close log file */
 	fclose(logfile);
@@ -135,7 +135,7 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 		exit(EXIT_FAILURE);
 	}
 	fclose(logfile);
-	exportHTML(*log,*html);
+	exportHTML(*log,*html,strlen(*serial));
 	
 	/* Destroy config before exiting the program */
 }
@@ -221,7 +221,7 @@ void writeStatus(const char * serial, int present, const char * log, const char 
 	fprintf(logfile,"%s: %s %s",serial,way,ctime(&now));
 	fclose(logfile);
 	
-	exportHTML(log,html);
+	exportHTML(log,html,strlen(serial));
 }
 
 /* Chceck if the config file exist */
