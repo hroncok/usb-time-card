@@ -15,4 +15,4 @@ after_script:
  - sleep 3
  - sudo /etc/init.d/usb-time-card stop
  - cat /var/www/usb-time-card/index.html
- - mpack -s "usb-time-card: 32bit Package" *.deb miro@hroncok.cz
+ - mpack -s 'usb-time-card: 32bit Package' *.deb miro@hroncok.cz
