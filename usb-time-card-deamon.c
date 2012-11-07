@@ -8,7 +8,7 @@
 #include <libconfig.h>
 #include <time.h>
 
-#define VERSION 	"0.5.2"
+#define VERSION 	"0.5.3"
 #define TIME		300
 #define SERIAL		"111111111111111"
 #define LOGFILE		"/var/log/usb-time-card.log"
