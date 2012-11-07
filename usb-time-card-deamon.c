@@ -30,10 +30,11 @@ void mkdirp(const char * filename) {
 
 
 /* Proccess the file backquards */
-void backquards(FILE * logfile, FILE * htmlfile, int sln) {
+void backquards(FILE * logfile, FILE * htmlfile) {
 	/* This trick with recursion is from here:
 	   http://www.linuxquestions.org/questions/programming-9/c-to-reverse-a-text-file-697749/#post3411377 */
 	char line[50];
+	int sln;
 	if(! fgets(line,sizeof(line),logfile)) {
 		if(!feof(logfile)) {
 			perror("Log file input error");
@@ -41,7 +42,8 @@ void backquards(FILE * logfile, FILE * htmlfile, int sln) {
 		}
 		return;
 	}
-	backquards(logfile,htmlfile,sln);
+	backquards(logfile,htmlfile);
+	sln = strchr(line,':') - line;
 	fprintf(htmlfile,"\t\t<tr class=\"%s\">\n",strndup(line+sln+2,3));
 	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line,sln));
 	fprintf(htmlfile,"\t\t\t<td>%s</td>\n",strndup(line+sln+2,3));
@@ -51,7 +53,7 @@ void backquards(FILE * logfile, FILE * htmlfile, int sln) {
 }
 
 /* Read the log and rebuild HTML page */
-void exportHTML(const char * log, const char * html, int sln) {
+void exportHTML(const char * log, const char * html) {
 	FILE *logfile;
 	FILE *htmlfile;
 	
@@ -77,7 +79,7 @@ void exportHTML(const char * log, const char * html, int sln) {
 	fprintf(htmlfile,"\t\t\t<th>Device</th>\n\t\t\t<th>Way</th>\n\t\t\t<th>Date</th>\n\t\t\t<th>Time</th>\n\t\t</tr>\n\t  </thead>\n\t  <tbody>\n");
 	
 	/* Proccess the file backquards */
-	backquards(logfile,htmlfile,sln);
+	backquards(logfile,htmlfile);
 	
 	/* Close log file */
 	fclose(logfile);
@@ -135,7 +137,7 @@ void loadConfig(config_t *cf, const char * config, int * waittime,const char ** 
 		exit(EXIT_FAILURE);
 	}
 	fclose(logfile);
-	exportHTML(*log,*html,strlen(*serial));
+	exportHTML(*log,*html);
 	
 	/* Destroy config before exiting the program */
 }
@@ -221,7 +223,7 @@ void writeStatus(const char * serial, int present, const char * log, const char 
 	fprintf(logfile,"%s: %s %s",serial,way,ctime(&now));
 	fclose(logfile);
 	
-	exportHTML(log,html,strlen(serial));
+	exportHTML(log,html);
 }
 
 /* Chceck if the config file exist */
