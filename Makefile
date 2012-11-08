@@ -1,18 +1,25 @@
-CC=gcc
+CC?=gcc
 CFLAGS=-Wall -pedantic -g
 LIBS=-ludev -lconfig
 VERSION=$(shell grep "define VERSION" usb-time-card-deamon.c | cut -f3 -d" " | cut -f2 -d\")
 
 ifeq "$(shell uname -m)" "x86_64"
-	ARCH=amd64
+	ARCH?=amd64
 else
-	ARCH=i386
+	ARCH?=i386
 endif
+
+ifeq "$(ARCH)" "i386"
+	M=-m32
+else
+	M=-m64
+endif
+
 
 all: usb-time-card-deamon
 
 usb-time-card-deamon: usb-time-card-deamon.c
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) $(M) -o $@ $^ $(CFLAGS) $(LIBS)
 
 root: usb-time-card-deamon usb-time-card usb-time-card.conf usb-time-card.1
 	rm root -rf
