@@ -42,6 +42,7 @@ install: root
 debian: root
 	rm root/DEBIAN -rf
 	cp -ra DEBIAN root
+	chmod -R 755 root/DEBIAN
 	sed -i "s/VERSION/$(VERSION)/" root/DEBIAN/control
 	sed -i "s/ARCH/$(ARCH)/" root/DEBIAN/control
 	sed -i "s/SIZE/$$((`du -s root | cut -f1`-`du -s root/DEBIAN | cut -f1`))/" root/DEBIAN/control
