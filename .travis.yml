@@ -1,7 +1,5 @@
 language: c
-compiler:
-  - gcc
-  - clang
+compiler: gcc
 
 before_install:
  - sudo sed -i 's/precise/quantal/' /etc/apt/sources.list # for libconfig9
